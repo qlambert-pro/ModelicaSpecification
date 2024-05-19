@@ -8,10 +8,12 @@ It takes place after any evaluation of evaluable parameters and no evaluable par
 It is performed by using a type inference algorithm, albeit adapted to work with units.
 The algorithm proposed here is based on the Hindley-Milner algorithm.
 At a high level the algorithm collects a set of constraints on the units of expressions.
-It extracts a set of substitutions from these constraints which once applied determine whether a variable has a unit and what that unit would be.
+Depending on the deprecation status of the constraints in combination with tool settings for how to treat deprecated semantics, more or less constraints will be collected.
+The algorithm extracts a set of substitutions from these constraints which once applied determine whether a variable has a unit and what that unit would be.
 Any inconsistency discovered during this process is a unit error, and any unit expression that contains remaining unknowns at the end of the process is considered unknown.
 
 The document is organized as follows:
+* [Procedure for introducing unit checking](#introducing-unit-checking-in-modelica)
 * [Introduction of what is meant by the unit of a variable](#the-unit-of-a-modelica-variable)
 * [Description of the objects used in the inference algorithm](#unit-constraints-and-meta-expressions)
 * [Definition of unit equivalence and convertibility](#unit-equivalence-and-convertibility)
@@ -19,6 +21,25 @@ The document is organized as follows:
 * [Application to Modelica](#unit-constraints-of-a-modelica-model)
 * [Modelica operators on units](#modelica-operators-on-units)
 * [Extensions and limitations](#possible-extensions-and-current-limits)
+
+## Introducing unit checking in Modelica
+
+This proposal defines a notion of unit consistency in Modelica.
+Since Modelica currently does not enforce any kind of unit consistency, there will be many inconsistencies in existing libraries, and this MCP does not break backwards compatibility in the sense of making models and libraries invalid without a chance of first addressing the problems.
+Instead a strategy for gradual deprecation and phasing out of models with unit inconsistencies is proposed.
+
+While collected unit constraints are required to be consistent, the process for phasing out unit inconsistency targets how the constraints are collected.
+When a new rule for a constraint to be collected is added to the specification, it is added along with the deprecated semanics that it does not have to be collected.
+Hence, there will be a grace period (possibly for the duration of several releases of the specification) during which deprecated semantics can be addressed, before collecting the constraint becomes mandatory.
+
+This MCP only introduces a basic set of constrints to be collected.
+It is future work to strengthen the meaning of unit consistency in Modelica both by defining more constraints to collect, and by gradually making it mandatory to collect more and more of the constraints.
+
+A tool can easily generate appropriate deprecation warnings by collecting one set of mandatory constraints and one set of constraints with deprecated opt-out.
+The mandatory constraints are processed first, and any inconsistency revealed then is an error.
+If no errors are detected, the tool can then proceeed with the remaining constrints.
+If an inconsistency is then revealed, a deprecation diagnostics should be reported.
+In practice, it is expected that tools will also offer non-standard ways of controlling if and how to report unit inconsistencies.
 
 ## The unit of a Modelica variable
 
@@ -169,12 +190,15 @@ The Hindley-Milner algorithm modified to perform unit inference in Modelica:
 The following rules describe the unit meta-expression of a given Modelica expression, where it makes sense.
 They also provide the constraints that arise from different Modelica constructs.
 
-When it is specified that _`u1` must be equivalent to `u2`_, the corresponding constraint should be collected.
+When it is specified below that _`u1` must be equivalent to `u2`_, it means two things:
+- The corresponding constraint shall be collected.
+- It is a deprecated semantics to not collect the constraint.
 
 In this section, the unit meta-expression of expression `e` is called `e.unit` and conditions of conditional constraints are highlighted with [].
 
 ### Variables
 If `var` has a declared `unit`-attribute, `var.unit` must be equivalent to it.
+(This rule would not require deprecated semantics, as it cannot introduce unit inconsistency by itself.)
 
 `var.unit` must be equivalent to the unit of the following attributes if present:
  * `start`
