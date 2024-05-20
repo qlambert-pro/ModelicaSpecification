@@ -3,7 +3,7 @@
 Unit checking is the process of inferring the units of Modelica variables, and ensuring the variables are used consistently in expressions and equations.
 
 It takes place after any evaluation of evaluable parameters and no evaluable parameters shall be evaluated during this process.
-(This must be true as long as tools allow the users to opt-out from unit-checking.)
+(This must be true as long as there are unit constraints that may be ignored according to deprecated semantics.)
 
 It is performed by using a type inference algorithm, albeit adapted to work with units.
 The algorithm proposed here is based on the Hindley-Milner algorithm.
