@@ -19,13 +19,15 @@ All authors of this MCP or their organizations have signed the "Modelica Contrib
 FIXME
 
 ## Backwards Compatibility
-As current Modelica doesn't clearly reject some models with non-sensical combination of units, this MCP will break backwards compatibility by turning at least some of these invalid.
+This MCP defines unit checking with deprecated semantics that allow not checking anything, and hence it does not immediately break backwards compatibility.
+Of course, backwards compatibility should ultimately be broken by removing the deprecated semantics.
+The structure of the proposal is such that this can be done gradually.
 
 ## Tool Implementation
-None, so far.
+Unit checking in System Modeler is made according to this proposal (with some extensions).
 
 ### Experience with Prototype
-N/A
+The test implementation is currently being compared to how unit checking is made in other tools.
 
 ## Required Patents
 To the best of our knowledge, there are no patents that would conflict with the incorporation of this MCP.
